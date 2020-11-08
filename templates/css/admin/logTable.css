@@ -1,0 +1,20 @@
+div#tableLogsList_length {
+    float: left;
+}
+
+div#tableLogsList_paginate {
+    float: right;
+}
+
+div#tableLogsList_filter {
+    float: right;
+}
+
+div#tableLogsList_info {
+    float: left;
+}
+
+#tableLogsList td:hover {
+    cursor: pointer;
+}
+

@@ -1,0 +1,20 @@
+div#tableDocsList_length {
+    float: left;
+}
+
+div#tableDocsList_paginate {
+    float: right;
+}
+
+div#tableDocsList_filter {
+    float: right;
+}
+
+div#tableDocsList_info {
+    float: left;
+}
+
+#tableDocsList td:hover {
+    cursor: pointer;
+}
+
