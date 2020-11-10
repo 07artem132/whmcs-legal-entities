@@ -15,6 +15,7 @@ use WHMCS\Module\Addon\LegalEntities\Controllers\PdfController;
 use WHMCS\Module\Addon\LegalEntities\Models\SettingModel;
 use WHMCS\Session;
 use WHMCS\User\Client;
+use WHMCS\View\Menu\Item as MenuItem;
 
 add_hook('AdminAreaHeadOutput', 99999999, function ($vars) {
     try {
@@ -41,9 +42,42 @@ add_hook('AdminAreaHeadOutput', 99999999, function ($vars) {
     }
 });
 
+add_hook('ClientAreaSecondaryNavbar', 1, function ($secondaryNavbar) {
+
+    $client = Menu::context('client');
+
+    if (is_null($client)) {
+        return;
+    }
+    $settings = SettingModel::where('key', 'like', 'client_%')
+        ->get()
+        ->keyBy('key')
+        ->transform(function ($item, $key) {
+            return $item->val;
+        })->toArray();
+    if (count($settings) == 0)
+        return ;
+
+    if (is_null($secondaryNavbar->getChild('Account'))) {
+        return;
+    }
+
+    If ($client->groupid != $settings['client_legal_entities_group_id']) {
+        return;
+    }
+
+    $secondaryNavbar->getChild('Account')
+        ->addChild('ts3resell', array(
+            'label' => 'Документы',
+            'uri' => '/?m=LegalEntities',
+            'order' => '14',
+        ));
+
+});
 add_hook('ClientAreaPageProfile', 1, function ($vars) {
     try {
-        $customfields = $vars['customfields'];
+        $customfields = array_column($vars['customfields'],null,'id');
+
         $settings = SettingModel::where('key', 'like', 'client_%')
             ->get()
             ->keyBy('key')
@@ -57,7 +91,7 @@ add_hook('ClientAreaPageProfile', 1, function ($vars) {
         if ($settings['client_legal_entities_group_id'] != $vars['client']->groupid)
             $hiddenAll = true;
 
-        if ($customfields[$settings['client_account_type_id']] != 'on')
+        if ($customfields[$settings['client_account_type_id']]['value'] != 'on')
             $hiddenAll = true;
 
         unset($settings['client_legal_entities_group_id']);
@@ -159,11 +193,7 @@ add_hook('ClientDetailsValidation', 1, function ($vars) {
         foreach ($settings as $setting => $val) {
             if ($setting == 'client_edf_exits_id')
                 continue;
-            if (!array_key_exists($val, $vars['customfield'])) {
-                $errors[] = sprintf('Не стандартная ошибка, отсутствует поле "%s"', $setting);
-                LogController::addError('ClientAreaRegister', sprintf('client id->%s Не стандартная ошибка, отсутствует поле "%s"',   (int)Session::get("uid"),$setting));
-                continue;
-            }
+
             if ($vars['customfield'][$val] == '') {
                 $errors[] = sprintf('Поле "%s" не может быть пустым для юр лица', $CustomFields[$val]->fieldname);
             }
@@ -203,11 +233,6 @@ add_hook('ClientDetailsValidation', 1, function ($vars) {
         unset($settings['client_legal_entities_group_id']);
 
         foreach ($settings as $setting => $val) {
-            if (!array_key_exists($val, $vars['customfield'])) {
-                $errors[] = sprintf('Не стандартная ошибка, отсутствует поле "%s"', $setting);
-                LogController::addError('ClientAreaRegister', sprintf('client id->%s Не стандартная ошибка, отсутствует поле "%s"',   (int)Session::get("uid"),$setting));
-                continue;
-            }
             $dbVal = $CustomFields[$val]
                 ->customFieldValues()
                 ->where('relid', '=', (int)Session::get("uid"))
@@ -216,7 +241,7 @@ add_hook('ClientDetailsValidation', 1, function ($vars) {
 
             if (strcasecmp($vars['customfield'][$val], $dbVal) !== 0) {
                 $errors[] = sprintf('Поле "%s" не может быть изменено', $CustomFields[$val]->fieldname);
-                LogController::addError('ClientAreaRegister', sprintf('client id->%s попытался изменить свои данные',   (int)Session::get("uid")));
+                LogController::addError('ClientAreaRegister', sprintf('client id->%s попытался изменить свои данные', (int)Session::get("uid")));
             }
         }
 
@@ -252,11 +277,11 @@ add_hook('ClientAreaRegister', 1, function ($vars) {
         $client = Client::findOrFail($vars['userid']);
         $client->groupid = $settings['client_legal_entities_group_id'];
         $client->saveOrFail();
-        LogController::addSuccess('ClientAreaRegister', sprintf('client id->%s добавлен в группу->%s',   $client->id,$client->groupid));
+        LogController::addSuccess('ClientAreaRegister', sprintf('client id->%s добавлен в группу->%s', $client->id, $client->groupid));
 
     } catch (\Throwable $e) {
         LogController::addError('ClientAreaRegister', json_encode($vars), $e);
-        return ;
+        return;
     }
 });
 
@@ -282,7 +307,7 @@ add_hook('ClientAreaPageCart', 1, function ($vars) {
                 $customfield['input'] .= "<script>$(\"input[name='customfield[" . $customfield['id'] . "]']\").parent().parent().hide()</script>";
                 continue;
             } else {
-                $customfield['input'] .= '<script>window.hiddeInputs = [];$( document ).ready(function() {$(".form-horizontal[style=\'display: none;\']").each(function(index) {  window.hiddeInputs.push($(this)); if($("input[name=\'customfield[' . $customfield['id'] . ']\']").is(":checked")) $(this).show();});});$(\'input[type="checkbox"][name="customfield[' . $customfield['id'] . ']"]\').on(\'change\', function() {if($(this).is(":checked")) {$(".form-horizontal[style=\'display: none;\']").each(function(index) {$(this).show();})} else {for(var i = 0; i < window.hiddeInputs.length; i++) {$(window.hiddeInputs[i]).hide()}}});</script>';
+                $customfield['input'] .= '<script>window.hiddeInputs = [];$(document).ready(function() {$(".form-horizontal[style=\'display: none;\']").each(function(index) {window.hiddeInputs.push($(this));if($("input[name=\'customfield[393]\']").is(":checked")) $(this).show();});if($("input[name=\'customfield[393]\']").is(":checked")) {$("input[name=\'paymentmethod\']").parent().hide();$("input[value=\'LegalEntities\']").parent().show();} else {$("input[name=\'paymentmethod\']").parent().show();$("input[value=\'LegalEntities\']").parent().hide();} $("input[name=\'paymentmethod\']:visible").click();});$(\'input[type="checkbox"][name="customfield[393]"]\').on(\'change\', function() {if($(this).is(":checked")) {$(".form-horizontal[style=\'display: none;\']").each(function(index) {$(this).show();});$("input[name=\'paymentmethod\']").parent().hide();$("input[value=\'LegalEntities\']").parent().show();} else {for(var i = 0; i < window.hiddeInputs.length; i++) {$(window.hiddeInputs[i]).hide()}$("input[name=\'paymentmethod\']").parent().show();$("input[value=\'LegalEntities\']").parent().hide();}$("input[name=\'paymentmethod\']:visible").click();});</script>';
             }
         }
 
@@ -440,7 +465,9 @@ add_hook('InvoiceChangeGateway', 1, function ($vars) {
             unset($allowGateways['LegalEntities']);
             $invoice->paymentmethod = array_key_first($allowGateways);
             $invoice->saveOrFail();
-        } else {
+        }
+
+        if (strcasecmp($vars['paymentmethod'], 'LegalEntities') !== 0 && $AllowSelectLegalEntitiesPay) {
             if (array_key_exists('LegalEntities', $allowGateways)) {
                 $invoice->paymentmethod = 'LegalEntities';
                 $invoice->saveOrFail();
@@ -448,7 +475,7 @@ add_hook('InvoiceChangeGateway', 1, function ($vars) {
         }
     } catch (\Throwable $e) {
         LogController::addError('InvoiceChangeGateway', json_encode($vars), $e);
-        return ;
+        return;
     }
 });
 
