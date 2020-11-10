@@ -55,7 +55,7 @@ class PdfController extends PdfControllerAbstract
                 '%invoice.id%'
             ];
             $replace = [
-                $invoice->date->format('Y-m-d'),
+                $invoice->date->format('d.m.Y'),
                 $invoiceID
             ];
             $var = [

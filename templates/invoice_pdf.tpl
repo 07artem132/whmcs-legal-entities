@@ -97,7 +97,7 @@
             position: relative;
         }
         .sign table {
-            width: 70%;
+            width: 80%;
         }
         .sign th {
             padding: 10px 0 0 0;
@@ -111,16 +111,16 @@
         }
 
         .sign-1 {
-            position: absolute;
-            left: 300px;
-            top: 50px;
-            width: 70px;
-            z-index: 2;
-        }
-        .sign-2 {
-            position: absolute;
-            left: 300px;
-            top: 9px;
+            /*position: absolute;
+           left: 300px;
+           top: 50px;*/
+           width: 70px;
+           z-index: 2;
+       }
+       .sign-2 {
+           /*position: absolute;
+           left: 300px;
+           top: 9px;*/
             width: 70px;
             z-index: 2;
         }
@@ -148,13 +148,13 @@
     <tr>
         <td colspan="2" style="border-top: none; font-size: 10px;">Банк получателя</td>
         <td>Сч. №</td>
-        <td style="border-top: none;">{$accountNumber1}</td>
+        <td style="border-top: none;">{$accountNumber2}</td>
     </tr>
     <tr>
         <td width="25%">ИНН {$inn}</td>
         <td width="30%">КПП {$kpp}</td>
         <td width="10%" rowspan="3">Сч. №</td>
-        <td width="35%" rowspan="3">{$accountNumber2}</td>
+        <td width="35%" rowspan="3">{$accountNumber1}</td>
     </tr>
     <tr>
         <td colspan="2" style="border-bottom: none;">{$reciver}</td>
@@ -216,8 +216,8 @@
         <th>{$total}</th>
     </tr>
     <tr>
-        <th colspan="4">В том числе НДС:</th>
-        <th>{if $nds eq ''}Не облагается{else}{$nds}{/if}</th>
+        <th colspan="4">В т.ч. НДС{if $nds_raw eq 0}(Без НДС){/if}:</th>
+        <th>{if $nds_raw eq 0}-{else}{$nds}{/if}</th>
     </tr>
     <tr>
         <th colspan="4">Всего к оплате:</th>
@@ -233,18 +233,18 @@
 </div>
 <div>{$footerVar}</div>
 <div class="sign">
-    <img class="sign-1" src="{$sign1}">
-    <img class="sign-2" src="{$sign2}">
     <img class="printing" src="{$printing}">
     <table>
         <tbody>
         <tr>
-            <th width="30%">Руководитель</th>
-            <td width="70%">{$Leader}</td>
+            <th style="width: 300px">Руководитель</th>
+            <td width="20%"><img class="sign-1" src="{$sign1}"></td>
+            <td style="text-align: left;width: 200px">{$Leader}</td>
         </tr>
         <tr>
             <th>Бухгалтер</th>
-            <td>{$bookkeeper}</td>
+            <td style="text-align: center;"> <img class="sign-2" src="{$sign2}"></td>
+            <td style="text-align: left">{$bookkeeper}</td>
         </tr>
         </tbody>
     </table>

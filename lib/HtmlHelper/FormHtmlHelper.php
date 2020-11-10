@@ -29,7 +29,7 @@ class FormHtmlHelper
 
     public function addGroup(FormGroupHtmlHelper $group)
     {
-        $this->groups[] = $group;
+        $this->groups[$group->getName()] = $group;
         return $this;
     }
 

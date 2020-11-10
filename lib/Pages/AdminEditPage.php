@@ -43,7 +43,18 @@ class AdminEditPage implements PageInterface
 
             $form->loadForm($_GET['id']);
             if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+                $oldFile = $form->getSetting('Добавление документа', 'file');
                 $form->saveForm($_POST, $_FILES);
+                $newFile = $form->getSetting('Добавление документа', 'file');
+
+                if (strcasecmp($oldFile, $newFile) !== 0) {
+                    if (unlink($oldFile)) {
+                        LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove old file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    } else {
+                        LogController::addError(__CLASS__, sprintf('adminid->%s error old remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    }
+                }
+
                 LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
                 redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
             }
@@ -57,7 +68,7 @@ class AdminEditPage implements PageInterface
     function createForm()
     {
         $form = new FormHtmlHelper(new DocModel(), false);
-        return $form->addGroup((new FormGroupHtmlHelper('Настраиваемые поля счета', 3))
+        return $form->addGroup((new FormGroupHtmlHelper('Добавление документа', 3))
             ->addItem((new ItemTextHtmlHelper())
                 ->setLabel('Название')
                 ->setName('name')

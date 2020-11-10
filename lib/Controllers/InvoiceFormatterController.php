@@ -17,9 +17,8 @@ class InvoiceFormatterController
 
         $f = new \NumberFormatter('ru', \NumberFormatter::SPELLOUT);
         $str = $f->format($value[0]);
-
         // Первую букву в верхний регистр.
-        $str = strtoupper(substr($str, 0, 1)) . substr($str, 1, strlen($str));
+        $str = mb_strtoupper(mb_substr($str, 0, 1)) . mb_substr($str, 1, mb_strlen($str));
 
         // Склонение слова "рубль".
         $num = $value[0] % 100;

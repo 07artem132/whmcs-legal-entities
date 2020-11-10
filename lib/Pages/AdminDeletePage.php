@@ -19,7 +19,15 @@ class AdminDeletePage implements PageInterface
             if (!array_key_exists('id', $_GET))
                 redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
 
-            DocModel::destroy($_GET['id']);
+            $result = DocModel::findOrFail($_GET['id']);
+
+            if (unlink($result->file))
+                LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+            else
+                LogController::addError(__CLASS__, sprintf('adminid->%s error remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+
+            $result->delete();
+
             LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove doc->%s', $_SESSION['adminid'], $_GET['id']));
 
             redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
