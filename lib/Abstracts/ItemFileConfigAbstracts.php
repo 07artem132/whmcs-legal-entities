@@ -27,7 +27,7 @@ abstract class ItemFileConfigAbstracts extends ItemConfigAbstracts
         return $this->isLoaded;
     }
 
-    public function uploadFile(bool $nameAsHash = false)
+    public function uploadFile(bool $nameAsHash = false,string $name='')
     {
         if ($_FILES[$this->name]['error'] != 0)
             return $this;
@@ -36,6 +36,10 @@ abstract class ItemFileConfigAbstracts extends ItemConfigAbstracts
 
         if ($nameAsHash)
             $uploadFile = ModuleConfig::geUploadPath() . '/' . hash_file('sha512', $_FILES[$this->name]['tmp_name']) . '.' . $ext;
+        else if($nameAsHash&&$name!='')
+            $uploadFile = ModuleConfig::geUploadPath() . '/'.hash_file('sha512', $_FILES[$this->name]['tmp_name']). '-'. $name . '.' . $ext;
+        else if ($name!='')
+            $uploadFile = ModuleConfig::geUploadPath() . '/'. $name . '.' . $ext;
         else
             $uploadFile = ModuleConfig::geUploadPath() . '/' . $this->name . '.' . $ext;
 

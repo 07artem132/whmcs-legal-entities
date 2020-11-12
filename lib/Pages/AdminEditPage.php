@@ -54,7 +54,6 @@ class AdminEditPage implements PageInterface
                         LogController::addError(__CLASS__, sprintf('adminid->%s error old remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
                     }
                 }
-
                 LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
                 redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
             }

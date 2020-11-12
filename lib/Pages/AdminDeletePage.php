@@ -27,7 +27,6 @@ class AdminDeletePage implements PageInterface
                 LogController::addError(__CLASS__, sprintf('adminid->%s error remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
 
             $result->delete();
-
             LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove doc->%s', $_SESSION['adminid'], $_GET['id']));
 
             redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');

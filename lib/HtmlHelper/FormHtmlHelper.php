@@ -56,7 +56,10 @@ class FormHtmlHelper
                     /**
                      * @var $item ItemFileConfigAbstracts
                      */
-                    $item->uploadFile(true);
+                    if ($this->keyID != null)
+                        $item->uploadFile(true, (string)$this->keyID);
+                    else
+                        $item->uploadFile(false, '');
                 }
             }
         }
