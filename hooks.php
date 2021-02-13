@@ -56,13 +56,13 @@ add_hook('ClientAreaSecondaryNavbar', 1, function ($secondaryNavbar) {
             return $item->val;
         })->toArray();
     if (count($settings) == 0)
-        return ;
+        return;
 
     if (is_null($secondaryNavbar->getChild('Account'))) {
         return;
     }
 
-    If ($client->groupid != $settings['client_legal_entities_group_id']) {
+    if ($client->groupid != $settings['client_legal_entities_group_id']) {
         return;
     }
 
@@ -74,9 +74,10 @@ add_hook('ClientAreaSecondaryNavbar', 1, function ($secondaryNavbar) {
         ));
 
 });
+
 add_hook('ClientAreaPageProfile', 1, function ($vars) {
     try {
-        $customfields = array_column($vars['customfields'],null,'id');
+        $customfields = array_column($vars['customfields'], null, 'id');
 
         $settings = SettingModel::where('key', 'like', 'client_%')
             ->get()
@@ -298,7 +299,6 @@ add_hook('ClientAreaPageCart', 1, function ($vars) {
             })->toArray();
         if (count($settings) == 0)
             return [];
-
         foreach ($customfields as &$customfield) {
             if (!in_array($customfield['id'], $settings)) {
                 continue;
@@ -307,10 +307,9 @@ add_hook('ClientAreaPageCart', 1, function ($vars) {
                 $customfield['input'] .= "<script>$(\"input[name='customfield[" . $customfield['id'] . "]']\").parent().parent().hide()</script>";
                 continue;
             } else {
-                $customfield['input'] .= '<script>window.hiddeInputs = [];$(document).ready(function() {$(".form-horizontal[style=\'display: none;\']").each(function(index) {window.hiddeInputs.push($(this));if($("input[name=\'customfield['. $customfield['id'] .']\']").is(":checked")) $(this).show();});if($("input[name=\'customfield['. $customfield['id'] .']\']").is(":checked")) {$("input[name=\'paymentmethod\']").parent().hide();$("input[value=\'LegalEntities\']").parent().show();} else {$("input[name=\'paymentmethod\']").parent().show();$("input[value=\'LegalEntities\']").parent().hide();} $("input[name=\'paymentmethod\']:visible").click();});$(\'input[type="checkbox"][name="customfield['. $customfield['id'] .']"]\').on(\'change\', function() {if($(this).is(":checked")) {$(".form-horizontal[style=\'display: none;\']").each(function(index) {$(this).show();});$("input[name=\'paymentmethod\']").parent().hide();$("input[value=\'LegalEntities\']").parent().show();} else {for(var i = 0; i < window.hiddeInputs.length; i++) {$(window.hiddeInputs[i]).hide()}$("input[name=\'paymentmethod\']").parent().show();$("input[value=\'LegalEntities\']").parent().hide();}$("input[name=\'paymentmethod\']:visible").click();});</script>';
+                $customfield['input'] .= '<script>window.hiddeInputs = [];$(document).ready(function() {$(".form-horizontal[style=\'display: none;\']").each(function(index) {window.hiddeInputs.push($(this));if($("input[name=\'customfield[' . $customfield['id'] . ']\']").is(":checked")) $(this).show();});if($("input[name=\'customfield[' . $customfield['id'] . ']\']").is(":checked")) {$("input[name=\'paymentmethod\']").parent().hide();$("input[value=\'LegalEntities\']").parent().show();} else {$("input[name=\'paymentmethod\']").parent().show();$("input[value=\'LegalEntities\']").parent().hide();} $("input[name=\'paymentmethod\']:visible").click();});$(\'input[type="checkbox"][name="customfield[' . $customfield['id'] . ']"]\').on(\'change\', function() {if($(this).is(":checked")) {$(".form-horizontal[style=\'display: none;\']").each(function(index) {$(this).show();});$("input[name=\'paymentmethod\']").parent().hide();$("input[value=\'LegalEntities\']").parent().show();} else {for(var i = 0; i < window.hiddeInputs.length; i++) {$(window.hiddeInputs[i]).hide()}$("input[name=\'paymentmethod\']").parent().show();$("input[value=\'LegalEntities\']").parent().hide();}$("input[name=\'paymentmethod\']:visible").click();});</script>';
             }
         }
-
         return [
             'customfields' => $customfields
         ];
@@ -542,4 +541,26 @@ add_hook('EmailPreSend', 1, function ($vars) {
         LogController::addError('EmailPreSend', json_encode($vars), $e);
         return [];
     }
+});
+
+add_hook('ClientAreaFooterOutput', 2, function ($vars) {
+    if (!array_key_exists('a', $_GET) || $_GET['a'] != 'checkout')
+        return '';
+
+    if ($vars['client'] == null)
+        return '';
+
+    $settings = SettingModel::where('key', 'like', 'client_%')
+        ->get()
+        ->keyBy('key')
+        ->transform(function ($item, $key) {
+            return $item->val;
+        })->toArray();
+
+    if (count($settings) == 0)
+        return '';
+
+    if ((int)$settings['client_legal_entities_group_id'] != $vars['client']['groupid'])
+        return "<script>$(\"input[value=\'LegalEntities\']\").parent().hide();</script>";
+    return '';
 });

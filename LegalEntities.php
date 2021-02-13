@@ -79,7 +79,6 @@ function LegalEntities_deactivate()
 
 function LegalEntities_output($var)
 {
-    //dd(UninstallController::dropTable('mod_addon_legal_entities_doc'),InstallController::createTableDoc());
     $PageController = new PageController($var);
     $PageController->setDefaultAction('index');
     $PageController->setSuffixTemplate('admin');

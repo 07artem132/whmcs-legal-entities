@@ -2,7 +2,6 @@
 
 namespace WHMCS\Module\Addon\LegalEntities\HtmlHelper;
 
-use WHMCS\CustomField;
 use WHMCS\Database\Capsule;
 use WHMCS\Module\Addon\LegalEntities\Abstracts\ItemSelectConfigAbstracts;
 

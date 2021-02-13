@@ -5,7 +5,7 @@ namespace WHMCS\Module\Addon\LegalEntities\Controllers;
 
 use WHMCS\Module\Addon\LegalEntities\Configs\ModuleConfig;
 use WHMCS\Module\Addon\LegalEntities\Configs\SmartyConfig;
-use WHMCS\Module\Addon\LegalEntities\vendor\PageController\Interfaces\PageInterface;
+use WHMCS\Module\Addon\LegalEntities\Interfaces\PageInterface;
 use WHMCS\View\Menu\MenuFactory;
 
 class PageController

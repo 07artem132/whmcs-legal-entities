@@ -6,7 +6,6 @@ namespace WHMCS\Module\Addon\LegalEntities\HtmlHelper;
 use WHMCS\Model\AbstractModel;
 use WHMCS\Module\Addon\LegalEntities\Abstracts\ItemConfigAbstracts;
 use WHMCS\Module\Addon\LegalEntities\Abstracts\ItemFileConfigAbstracts;
-use WHMCS\Module\Addon\LegalEntities\Models\SettingModel;
 
 class FormHtmlHelper
 {

@@ -3,7 +3,7 @@
 namespace WHMCS\Module\Addon\LegalEntities\Tasks;
 
 use WHMCS\Module\Addon\LegalEntities\Models\LogModel;
-use WHMCS\Module\Addon\LegalEntities\vendor\Cron\Interfaces\TaskInterfaces;
+use WHMCS\Module\Addon\LegalEntities\Interfaces\TaskInterfaces;
 
 class RemoveOldLog implements TaskInterfaces
 {
