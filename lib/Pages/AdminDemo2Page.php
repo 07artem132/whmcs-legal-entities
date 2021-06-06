@@ -15,9 +15,9 @@ use WHMCS\Module\Addon\LegalEntities\Controllers\PdfController;
 use WHMCS\Module\Addon\LegalEntities\Interfaces\PageInterface;
 use WHMCS\View\Menu\MenuFactory;
 
-class AdminDemoPage implements PageInterface
+class AdminDemo2Page implements PageInterface
 {
-    private $templateName = 'admin_demo.tpl';
+    private $templateName = 'admin_demo2.tpl';
     private $vars = [];
 
     function __construct()
@@ -34,15 +34,14 @@ class AdminDemoPage implements PageInterface
             'kpp' => '000000000',
             'midleVar' => 'Зона коментария 2',
             'invoiceID' => '10',
-            'invoiceDate' => strftime('%d %B %G г.', time()),
-            'provider' => 'ООО "Компания", ИНН 0000000000, КПП 000000000, 125009, Москва г, Тверская ул, дом № 9',
-            'customer' => 'ООО "Покупатель", ИНН 0000000000, КПП 000000000, 119019, Москва г, Новый Арбат ул,
-дом № 10',
+            'invoicePaidDate' => strftime('%d %B %G г.', time()),
+            'provider' => 'ООО "Компания", ИНН 0000000000, р/c 0000000000, в банке %Банк получателя%, БИК 000000, к/c 00000000000000000000',
+            'customer' => 'ООО "Покупатель", ИНН 0000000000, р/c 0000000000, 119019, Москва г, Новый Арбат ул, р/c 0000000000, в банке %Банк получателя%, БИК 000000, к/c 00000000000000000000',
             'items' => [
                 [
                     'name' => 'Плита CERAMAGUARD FINE FISSURED (100 RH) 600*600*15',
-                    'count' => 1,
-                    'unit' => 'усл',
+                    'count' => '-',
+                    'unit' => '-',
                     'price' => InvoiceFormatterController::format_price(1210),
                     'price_total' => InvoiceFormatterController::format_price(1210*1),
                     'price_raw' => 1210,
@@ -50,8 +49,8 @@ class AdminDemoPage implements PageInterface
                 ],
                 [
                     'name' => 'Профиль 20*20',
-                    'count' => 1,
-                    'unit' => 'усл',
+                    'count' => '-',
+                    'unit' => '-',
                     'price' => InvoiceFormatterController::format_price(550),
                     'price_total' => InvoiceFormatterController::format_price(550*1),
                     'price_raw' => 550,
@@ -76,10 +75,10 @@ class AdminDemoPage implements PageInterface
         $var['sign2'] = ModuleConfig::getBaseFullPath() . '/templates/image/demo_sign-2.png';
         $var['printing'] = ModuleConfig::getBaseFullPath() . '/templates/image/demo_seal.png';
         if (array_key_exists('invoice_id', $_POST)) {
-            $this->vars['pdf'] = base64_encode(PdfController::renderInvoice(intval($_POST['invoice_id'])));
+            $this->vars['pdf'] = base64_encode(PdfController::renderReconciliationAct(intval($_POST['invoice_id'])));
             return;
         }
-        $this->vars['pdf'] = base64_encode(PdfController::renderInvoice(null, $var));
+        $this->vars['pdf'] = base64_encode(PdfController::renderReconciliationAct(null, $var));
     }
 
     function getTemplateName(): string

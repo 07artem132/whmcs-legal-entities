@@ -5,6 +5,7 @@ namespace WHMCS\Module\Addon\LegalEntities\Pages;
 use WHMCS\Module\Addon\LegalEntities\Configs\ModuleConfig;
 use WHMCS\Module\Addon\LegalEntities\Controllers\LogController;
 use WHMCS\Module\Addon\LegalEntities\Models\DocModel;
+use WHMCS\Module\Addon\LegalEntities\Models\SharedDocModel;
 use WHMCS\View\Menu\MenuFactory;
 use WHMCS\Module\Addon\LegalEntities\Interfaces\PageInterface;
 
@@ -19,17 +20,31 @@ class AdminDeletePage implements PageInterface
             if (!array_key_exists('id', $_GET))
                 redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
 
-            $result = DocModel::findOrFail($_GET['id']);
+            if (!array_key_exists('type', $_GET)) {
+                $result = DocModel::findOrFail($_GET['id']);
 
-            if (unlink($result->file))
-                LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
-            else
-                LogController::addError(__CLASS__, sprintf('adminid->%s error remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                if (unlink($result->file))
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                else
+                    LogController::addError(__CLASS__, sprintf('adminid->%s error remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
 
-            $result->delete();
-            LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove doc->%s', $_SESSION['adminid'], $_GET['id']));
+                $result->delete();
+                LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove doc->%s', $_SESSION['adminid'], $_GET['id']));
 
-            redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
+                redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
+            } else {
+                $result = SharedDocModel::findOrFail($_GET['id']);
+
+                if (unlink($result->file))
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                else
+                    LogController::addError(__CLASS__, sprintf('adminid->%s error remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+
+                $result->delete();
+                LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove doc->%s', $_SESSION['adminid'], $_GET['id']));
+
+                redir(sprintf('module=%s&action=shared', ModuleConfig::getModuleName()), 'addonmodules.php');
+            }
         } catch (\Throwable $e) {
             LogController::addError(__CLASS__, sprintf('adminid->%s', $_SESSION['adminid']), $e);
         }

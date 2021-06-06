@@ -17,4 +17,43 @@ div#tableDocsList_info {
 #tableDocsList td:hover {
     cursor: pointer;
 }
+div#tableDocsSharedList_length {
+    float: left;
+}
+
+div#tableDocsSharedList_paginate {
+    float: right;
+}
+
+div#tableDocsSharedList_filter {
+    float: right;
+}
+
+div#tableDocsSharedList_info {
+    float: left;
+}
+
+#tableDocsSharedList td:hover {
+    cursor: pointer;
+}
+
+div#tableActsList_length {
+    float: left;
+}
+
+div#tableActsList_paginate {
+    float: right;
+}
+
+div#tableActsList_filter {
+    float: right;
+}
+
+div#tableActsList_info {
+    float: left;
+}
+
+#tableActsList td:hover {
+    cursor: pointer;
+}
 

@@ -10,7 +10,9 @@ use WHMCS\Module\Addon\LegalEntities\HtmlHelper\ItemCheckboxHtmlHelper;
 use WHMCS\Module\Addon\LegalEntities\HtmlHelper\ItemFileHtmlHelper;
 use WHMCS\Module\Addon\LegalEntities\HtmlHelper\ItemSelectHtmlHelper;
 use WHMCS\Module\Addon\LegalEntities\HtmlHelper\ItemTextHtmlHelper;
+use WHMCS\Module\Addon\LegalEntities\Models\ActModel;
 use WHMCS\Module\Addon\LegalEntities\Models\DocModel;
+use WHMCS\Module\Addon\LegalEntities\Models\SharedDocModel;
 use WHMCS\View\Menu\MenuFactory;
 use WHMCS\Module\Addon\LegalEntities\Interfaces\PageInterface;
 
@@ -24,44 +26,99 @@ class AdminEditPage implements PageInterface
         try {
             if (!array_key_exists('id', $_GET))
                 redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
-            if (array_key_exists('edf', $_GET)) {
-                $model = DocModel::findOrFail($_GET['id']);
-                $model->send_edf = intval($_GET['edf']);
-                $model->saveOrFail();
-                LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
-                redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
-            }
-            if (array_key_exists('mail', $_GET)) {
-                $model = DocModel::findOrFail($_GET['id']);
-                $model->send_mail = intval($_GET['mail']);
-                $model->saveOrFail();
-                LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
-                redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
-            }
-
-            $form = $this->createForm();
-
-            $form->loadForm($_GET['id']);
-            if ($_SERVER['REQUEST_METHOD'] != 'GET') {
-                $oldFile = $form->getSetting('Добавление документа', 'file');
-                $form->saveForm($_POST, $_FILES);
-                $newFile = $form->getSetting('Добавление документа', 'file');
-
-                if (strcasecmp($oldFile, $newFile) !== 0) {
-                    if (unlink($oldFile)) {
-                        LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove old file doc->%s', $_SESSION['adminid'], $_GET['id']));
-                    } else {
-                        LogController::addError(__CLASS__, sprintf('adminid->%s error old remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
-                    }
+            if (!array_key_exists('type', $_GET)) {
+                if (array_key_exists('edf', $_GET)) {
+                    $model = DocModel::findOrFail($_GET['id']);
+                    $model->send_edf = intval($_GET['edf']);
+                    $model->saveOrFail();
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
                 }
-                LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
-                redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
+                if (array_key_exists('mail', $_GET)) {
+                    $model = DocModel::findOrFail($_GET['id']);
+                    $model->send_mail = intval($_GET['mail']);
+                    $model->saveOrFail();
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
+                }
+
+                $form = $this->createForm();
+
+                $form->loadForm($_GET['id']);
+                if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+                    $oldFile = $form->getSetting('Добавление документа', 'file');
+                    $form->saveForm($_POST, $_FILES);
+                    $newFile = $form->getSetting('Добавление документа', 'file');
+
+                    if (strcasecmp($oldFile, $newFile) !== 0) {
+                        if (unlink($oldFile)) {
+                            LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove old file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                        } else {
+                            LogController::addError(__CLASS__, sprintf('adminid->%s error old remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                        }
+                    }
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
+                }
+                $this->vars['configField'] = $form->getSettingsAsArray();
+            } elseif ($_GET['type'] == 'shared') {
+                $form = $this->createFormShared();
+                $form->loadForm($_GET['id']);
+                $this->vars['configField'] = $form->getSettingsAsArray();
+                if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+                    $oldFile = $form->getSetting('Добавление документа', 'file');
+                    $form->saveForm($_POST, $_FILES);
+                    $newFile = $form->getSetting('Добавление документа', 'file');
+
+                    if (strcasecmp($oldFile, $newFile) !== 0) {
+                        if (unlink($oldFile)) {
+                            LogController::addSuccess(__CLASS__, sprintf('adminid->%s remove shared old file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                        } else {
+                            LogController::addError(__CLASS__, sprintf('adminid->%s error shared old remove file doc->%s', $_SESSION['adminid'], $_GET['id']));
+                        }
+                    }
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    redir(sprintf('module=%s&action=shared', ModuleConfig::getModuleName()), 'addonmodules.php');
+                }
+            } elseif ($_GET['type'] == 'act') {
+                if (array_key_exists('edf', $_GET)) {
+                    $model = ActModel::firstOrNew(['rel_id'=>$_GET['id']]);
+                    $model->send_edf = intval($_GET['edf']);
+                    $model->saveOrFail();
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit act doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    redir(sprintf('module=%s&action=acts', ModuleConfig::getModuleName()), 'addonmodules.php');
+                }
+                if (array_key_exists('mail', $_GET)) {
+                    $model = ActModel::firstOrNew(['rel_id'=>$_GET['id']]);
+                    $model->send_mail = intval($_GET['mail']);
+                    $model->saveOrFail();
+                    LogController::addSuccess(__CLASS__, sprintf('adminid->%s edit act doc->%s', $_SESSION['adminid'], $_GET['id']));
+                    redir(sprintf('module=%s&action=acts', ModuleConfig::getModuleName()), 'addonmodules.php');
+                }
             }
-            $this->vars['configField'] = $form->getSettingsAsArray();
         } catch (\Throwable $e) {
             LogController::addError(__CLASS__, sprintf('adminid->%s', $_SESSION['adminid']), $e);
         }
 
+    }
+
+    function createFormShared()
+    {
+        $form = new FormHtmlHelper(new SharedDocModel(), false);
+        return $form->addGroup((new FormGroupHtmlHelper('Добавление документа', 3))
+            ->addItem((new ItemTextHtmlHelper())
+                ->setLabel('Название')
+                ->setName('name')
+                ->setDescription('Введите имя документа')
+                ->setClass('form-control')
+                ->required()
+            )
+            ->addItem((new ItemFileHtmlHelper())
+                ->setLabel('Файл')
+                ->setName('file')
+                ->setDescription('Выберите файл который необходимо загрузить')
+            )
+        );
     }
 
     function createForm()
@@ -79,7 +136,7 @@ class AdminEditPage implements PageInterface
                 ->setLabel('Тип')
                 ->setName('type')
                 ->addSelectAllow('Договор', 'Договор')
-                ->addSelectAllow('Акт', 'Акт')
+                ->addSelectAllow('Акт', 'Акт сверки')
                 ->addSelectAllow('Прочее', 'Прочее')
                 ->setDescription('Выберите тип документа')
                 ->makeAChoice()

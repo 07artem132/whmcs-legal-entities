@@ -42,10 +42,9 @@ add_hook('AdminAreaHeadOutput', 99999999, function ($vars) {
     }
 });
 
-add_hook('ClientAreaSecondaryNavbar', 1, function ($secondaryNavbar) {
+add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
 
     $client = Menu::context('client');
-
     if (is_null($client)) {
         return;
     }
@@ -58,7 +57,7 @@ add_hook('ClientAreaSecondaryNavbar', 1, function ($secondaryNavbar) {
     if (count($settings) == 0)
         return;
 
-    if (is_null($secondaryNavbar->getChild('Account'))) {
+    if (is_null($primaryNavbar->getChild('Billing'))) {
         return;
     }
 
@@ -66,11 +65,17 @@ add_hook('ClientAreaSecondaryNavbar', 1, function ($secondaryNavbar) {
         return;
     }
 
-    $secondaryNavbar->getChild('Account')
+    $primaryNavbar->getChild('Billing')
         ->addChild('ts3resell', array(
+            'label' => 'Акты',
+            'uri' => '/?m=LegalEntities&page=acts',
+            'order' => '11',
+        ));
+    $primaryNavbar->getChild('Billing')
+        ->addChild('ts3resell2', array(
             'label' => 'Документы',
-            'uri' => '/?m=LegalEntities',
-            'order' => '14',
+            'uri' => '/?m=LegalEntities&page=docs',
+            'order' => '12',
         ));
 
 });

@@ -42,15 +42,15 @@
             ],
             "aoColumnDefs": [
                 {
+                    "targets": 3,
+                    "orderable": false
+                },
+                {
+                    "targets": 4,
+                    "orderable": false
+                },
+                {
                     "targets": 5,
-                    "orderable": false
-                },
-                {
-                    "targets": 6,
-                    "orderable": false
-                },
-                {
-                    "targets": 7,
                     "orderable": false
                 },
             ],
@@ -87,10 +87,8 @@
         <thead>
         <tr>
             <th>#</th>
-            <th>Имя документа</th>
-            <th>Тип</th>
-            <th>Добавлен</th>
-            <th>Изменен</th>
+            <th>Дата создания акта</th>
+            <th>Сумма</th>
             <th></th>
             <th></th>
             <th></th>
@@ -99,11 +97,9 @@
         <tbody>
         {foreach key=num item=doc from=$docList}
             <tr>
-                <td>{$num+1}</td>
-                <td>{$doc.name}</td>
-                <td>{$doc.type}</td>
-                <td>{$doc.created_at}</td>
-                <td>{$doc.updated_at}</td>
+                <td>{$doc.id}</td>
+                <td>{$doc.datepaid}</td>
+                <td>{$doc.total}</td>
                 <td>
                     {if $doc.send_mail eq true}
                         <a href="#"
@@ -111,8 +107,8 @@
                             <i class="fas fa-envelope" style="color: green"></i>
                         </a>
                     {else}
-                        <a href="#"
-                           title="Документ не отправлен по почте">
+                        <a href="/?m=LegalEntities&rqs=page&id={$doc.down_id}&tps=почта"
+                           title="Документ не отправлен по почте,кликните для запроса отправки.">
                             <i class="fas fa-envelope" style="color: #b7bab7;"></i>
                         </a>
                     {/if}
@@ -124,26 +120,18 @@
                             <i class="fas fa-share-alt" style="color: green"></i>
                         </a>
                     {else}
-                        <a href="#"
-                           title="Документ не отправлен через ЭДО">
+                        <a href="/?m=LegalEntities&rqs=page&id={$doc.down_id}&tps=ЭДО"
+                           title="Документ не отправлен через ЭДО,кликните для запроса отправки.">
                             <i class="fas fa-share-alt" style="color: #b7bab7;"></i>
                         </a>
                     {/if}
                 </td>
                 <td>
-                    {if $doc.file neq ''}
-                        <a href="/?m=LegalEntities&fid={$doc.down_id}&type={$doc.type_download}"
+                        <a href="/?m=LegalEntities&fid={$doc.down_id}&type=act"
                            title="Скачать документ">
                             <i class="fas fa-download"></i>
                         </a>
-                    {else}
-                        <a href="#"
-                           title="Скачать документ невозможно">
-                            <i class="fas fa-download" style="color: #b7bab7"></i>
-                        </a>
-                    {/if}
                 </td>
-
             </tr>
         {/foreach}
         </tbody>

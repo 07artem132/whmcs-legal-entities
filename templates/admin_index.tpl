@@ -121,7 +121,7 @@
                     </td>
                     <td>
                         <a href="addonmodules.php?module=LegalEntities&action=delete&id={$doc.id}"
-                           title="Удалить домен"
+                           title="Удалить документ"
                            onClick="return window.confirm('Вы точно хотите удалить документ {$doc.name} ?');"
                         >
                             <i class="fas fa-trash-alt"></i>

@@ -25,6 +25,22 @@ class AdminAreaMenu extends MenuFactory
                 "attributes" => [
                     "class" => !array_key_exists('action', $_GET) || $_GET['action'] === 'index' ? 'active' : ''
                 ]
+            ],[
+                "name" => "shared",
+                "label" => 'Общие документы',
+                "uri" => ModuleConfig::getModuleLink() . "&action=shared",
+                "order" => 1,
+                "attributes" => [
+                    "class" => array_key_exists('action', $_GET) &&$_GET['action'] === 'shared' ? 'active' : ''
+                ]
+            ],[
+                "name" => "acts",
+                "label" => 'Акты',
+                "uri" => ModuleConfig::getModuleLink() . "&action=acts",
+                "order" => 1,
+                "attributes" => [
+                    "class" => array_key_exists('action', $_GET) &&$_GET['action'] === 'acts' ? 'active' : ''
+                ]
             ],
             [
                 "name" => "settings",
@@ -37,11 +53,20 @@ class AdminAreaMenu extends MenuFactory
             ],
             [
                 "name" => "demo",
-                "label" => 'Превью шаблона',
+                "label" => 'Превью счета',
                 "uri" => ModuleConfig::getModuleLink() . "&action=demo",
                 "order" => 1,
                 "attributes" => [
                     "class" => array_key_exists('action', $_GET) && $_GET['action'] === 'demo' ? 'active' : ''
+                ]
+            ],
+            [
+                "name" => "demo2",
+                "label" => 'Превью акта сверки',
+                "uri" => ModuleConfig::getModuleLink() . "&action=demo2",
+                "order" => 1,
+                "attributes" => [
+                    "class" => array_key_exists('action', $_GET) && $_GET['action'] === 'demo2' ? 'active' : ''
                 ]
             ],
             [

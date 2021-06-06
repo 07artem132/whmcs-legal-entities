@@ -100,4 +100,48 @@ class InstallController
         }
         return [];
     }
+    public static function createTableSharedDoc()
+    {
+        try {
+            $tbl_name = 'mod_addon_legal_entities_shared_doc';
+            if (!Capsule::schema()->hasTable($tbl_name)) {
+                Capsule::schema()->create($tbl_name, function ($table) {
+                    /** @var Blueprint $table */
+                    $table->increments('id');
+                    $table->string('name');
+                    $table->text('file');
+                    $table->timestamps();
+                });
+            }
+        } catch (Exception $e) {
+            return array(
+                'status' => 'error',
+                'description' => sprintf('Ошибка при создании таблицы: %s , %s', $tbl_name, $e->getMessage())
+            );
+        }
+        return [];
+    }
+
+    public static function createTableActs()
+    {
+        try {
+            $tbl_name = 'mod_addon_legal_entities_acts';
+            if (!Capsule::schema()->hasTable($tbl_name)) {
+                Capsule::schema()->create($tbl_name, function ($table) {
+                    /** @var Blueprint $table */
+                    $table->increments('id');
+                    $table->string('rel_id');
+                    $table->boolean('send_edf');
+                    $table->boolean('send_mail');
+                    $table->timestamps();
+                });
+            }
+        } catch (Exception $e) {
+            return array(
+                'status' => 'error',
+                'description' => sprintf('Ошибка при создании таблицы: %s , %s', $tbl_name, $e->getMessage())
+            );
+        }
+        return [];
+    }
 }

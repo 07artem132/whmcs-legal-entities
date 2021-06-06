@@ -3,9 +3,13 @@
 namespace WHMCS\Module\Addon\LegalEntities\Pages;
 
 use WHMCS\Module\Addon\LegalEntities\Configs\ModuleConfig;
+use WHMCS\Module\Addon\LegalEntities\Controllers\InvoiceFormatterController;
+use WHMCS\Module\Addon\LegalEntities\Controllers\PdfController;
 use WHMCS\Module\Addon\LegalEntities\Models\DocModel;
+use WHMCS\Module\Addon\LegalEntities\Models\SharedDocModel;
 use WHMCS\View\Menu\MenuFactory;
 use WHMCS\Module\Addon\LegalEntities\Interfaces\PageInterface;
+use WHMCS\Billing\Invoice;
 
 class AdminDownloadPage implements PageInterface
 {
@@ -18,17 +22,43 @@ class AdminDownloadPage implements PageInterface
             redir(sprintf('module=%s&action=index', ModuleConfig::getModuleName()), 'addonmodules.php');
         ob_end_clean();
         ob_implicit_flush();
-        $model = DocModel::findOrFail($_GET['id']);
-        $ext = pathinfo($model->file, PATHINFO_EXTENSION);
-        $file_name = sprintf('%s %s от %s.%s', $model->type, $model->name, $model->updated_at->format('Y-m-d'), $ext);
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="' . $file_name . '"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($model->file));
-        readfile($model->file);
+        if (!array_key_exists('type', $_GET)) {
+            $model = DocModel::findOrFail($_GET['id']);
+            $ext = pathinfo($model->file, PATHINFO_EXTENSION);
+            $file_name = sprintf('%s %s от %s.%s', $model->type, $model->name, $model->updated_at->format('Y-m-d'), $ext);
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . $file_name . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($model->file));
+            readfile($model->file);
+        } elseif ($_GET['type'] == 'shared') {
+            $model = SharedDocModel::findOrFail($_GET['id']);
+            $ext = pathinfo($model->file, PATHINFO_EXTENSION);
+            $file_name = sprintf('%s %s от %s.%s', $model->type, $model->name, $model->updated_at->format('Y-m-d'), $ext);
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . $file_name . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($model->file));
+            readfile($model->file);
+        } elseif ($_GET['type'] == 'act') {
+            $invoice = Invoice::findOrFail(intval($_GET['id']));
+            $file_name = "акт ".$_GET['id']." от ".$invoice->date->format('d.m.Y').".pdf";
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Disposition: attachment; filename="' . $file_name . '"');
+            setlocale(LC_TIME, 'ru_RU.UTF-8', 'Rus');
+            echo PdfController::renderReconciliationAct(intval($_GET['id']));
+            die();
+        }
     }
 
     /**

@@ -25,43 +25,61 @@ class DocModel extends AbstractModel
 
     public function getClientNameAttribute(): string
     {
-        $client = Client::findOrFail($this->client_id);
-        return $client->firstname . ' ' . $client->lastname;
+        try {
+            $client = Client::findOrFail($this->client_id);
+            return $client->firstname . ' ' . $client->lastname;
+        } catch (\Throwable $e) {
+            return 'Вероятно удален продукт';
+        }
     }
 
     public function getClientCompanyAttribute(): string
     {
-        $client = Client::findOrFail($this->client_id);
-        return $client->companyname;
+        try {
+            $client = Client::findOrFail($this->client_id);
+            return $client->companyname;
+        } catch (\Throwable $e) {
+            return 'Вероятно удален продукт';
+        }
+
     }
 
     public function getClientIdAttribute(): int
     {
-        switch ($this->rel_type) {
-            case 1:
-                return (int)Service::findOrFail($this->rel_id)->userid;
-            case 2:
-                return (int)\WHMCS\Service\Addon::findOrFail($this->rel_id)->userid;
-            case 3:
-                return (int)Domain::findOrFail($this->rel_id)->userid;
-            case 4:
-                return (int)$this->rel_id;
-            default:
-                throw  new \Exception("Неизвестный тип связи");
+        try {
+            switch ($this->rel_type) {
+                case 1:
+                    return (int)Service::findOrFail($this->rel_id)->userid;
+                case 2:
+                    return (int)\WHMCS\Service\Addon::findOrFail($this->rel_id)->userid;
+                case 3:
+                    return (int)Domain::findOrFail($this->rel_id)->userid;
+                case 4:
+                    return (int)$this->rel_id;
+                default:
+                    throw  new \Exception("Неизвестный тип связи");
+            }
+        } catch (\Throwable $e) {
+            return -1;
         }
+
     }
 
     public function getServiceUrlAttribute(): string
     {
-        switch ($this->rel_type) {
-            case 1:
-                return 'clientsservices.php?productselect=' . $this->rel_id;
-            case 2:
-                return 'clientsservices.php?aid=' . $this->rel_id;
-            case 3:
-                return 'clientsdomains.php?id=' . $this->rel_id;
-            case 4:
-                return 'clientsservices.php?userid=' . $this->rel_id;
+        try {
+            switch ($this->rel_type) {
+                case 1:
+                    return 'clientsservices.php?productselect=' . $this->rel_id;
+                case 2:
+                    return 'clientsservices.php?aid=' . $this->rel_id;
+                case 3:
+                    return 'clientsdomains.php?id=' . $this->rel_id;
+                case 4:
+                    return 'clientsservices.php?userid=' . $this->rel_id;
+            }
+        } catch (\Throwable $e) {
+            return 'Вероятно удален продукт';
         }
     }
 

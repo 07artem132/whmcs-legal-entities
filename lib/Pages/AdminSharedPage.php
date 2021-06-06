@@ -2,22 +2,21 @@
 
 namespace WHMCS\Module\Addon\LegalEntities\Pages;
 
-use Throwable;
 use WHMCS\Module\Addon\LegalEntities\Configs\ModuleConfig;
 use WHMCS\Module\Addon\LegalEntities\Interfaces\PageInterface;
 use WHMCS\Module\Addon\LegalEntities\Models\DocModel;
 use WHMCS\Module\Addon\LegalEntities\Models\LogModel;
+use WHMCS\Module\Addon\LegalEntities\Models\SharedDocModel;
 use WHMCS\View\Menu\MenuFactory;
 
-class AdminIndexPage implements PageInterface
+class AdminSharedPage implements PageInterface
 {
-    protected $templateName = 'admin_index.tpl';
+    protected $templateName = 'admin_shared.tpl';
     protected $vars = [];
 
     function __construct()
     {
-        $this->vars['docList'] = DocModel::all();
-
+         $this->vars['docList'] = SharedDocModel::all();
     }
 
     function getTemplateName(): string
