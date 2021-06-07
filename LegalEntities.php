@@ -209,6 +209,7 @@ function LegalEntities_clientarea($vars)
             $item = $item->toArray();
             $item['type_download'] = 'private';
             $item['down_id'] = urlencode(base64_encode(encrypt((string)$item['id'])));
+            $item['updated_at']=date('m.d.Y',strtotime($item['updated_at']));
             return $item;
         });
 
@@ -217,6 +218,7 @@ function LegalEntities_clientarea($vars)
             $item['type_download'] = 'public';
             $item['type'] = 'Общий документ';
             $item['down_id'] = urlencode(base64_encode(encrypt((string)$item['id'] . ':p')));
+            $item['updated_at']=date('m.d.Y',strtotime($item['updated_at']));
             return $item;
         });
 
@@ -253,6 +255,7 @@ function LegalEntities_clientarea($vars)
             ->get()->transform(function ($item) {
                 $item = $item->toArray();
                 $item['down_id'] = urlencode(base64_encode(encrypt((string)$item['id'])));
+                $item['updated_at']=date('m.d.Y',strtotime($item['updated_at']));
                 return $item;
             });;
         //  dump($docs);die();

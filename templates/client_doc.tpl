@@ -42,15 +42,15 @@
             ],
             "aoColumnDefs": [
                 {
+                    "targets": 4,
+                    "orderable": false
+                },
+                {
                     "targets": 5,
                     "orderable": false
                 },
                 {
                     "targets": 6,
-                    "orderable": false
-                },
-                {
-                    "targets": 7,
                     "orderable": false
                 },
             ],
@@ -89,8 +89,7 @@
             <th>#</th>
             <th>Имя документа</th>
             <th>Тип</th>
-            <th>Добавлен</th>
-            <th>Изменен</th>
+            <th>Дата</th>
             <th></th>
             <th></th>
             <th></th>
@@ -102,7 +101,6 @@
                 <td>{$num+1}</td>
                 <td>{$doc.name}</td>
                 <td>{$doc.type}</td>
-                <td>{$doc.created_at}</td>
                 <td>{$doc.updated_at}</td>
                 <td>
                     {if $doc.send_mail eq true}
