@@ -132,7 +132,7 @@ function LegalEntities_clientarea($vars)
         );
     }
     if (array_key_exists('acts', $_GET)) {
-        $result = PdfController::renderVerifyActs($_SESSION['uid'], Carbon::parse($_POST['start_date']),Carbon::parse($_POST['end_date']), null);
+        $result = PdfController::renderVerifyActs($_SESSION['uid'], Carbon::parse($_GET['start_date']),Carbon::parse($_GET['end_date']), null);
         if ($result == null) {
             return;
         }

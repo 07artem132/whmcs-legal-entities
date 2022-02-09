@@ -14,12 +14,15 @@ class PdfControllerAbstract
         \Dompdf\Autoloader::register();
     }
 
-    public static function renderFromHtml($html,$orientation='portrait')
+    public static function renderFromHtml($html, $orientation = 'portrait')
     {
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', $orientation);
+        $options = $dompdf->getOptions();
+        $options->setFontHeightRatio(1);
+        $dompdf->setOptions($options);
         $dompdf->render();
-       return $dompdf->output();
+        return $dompdf->output();
     }
 }

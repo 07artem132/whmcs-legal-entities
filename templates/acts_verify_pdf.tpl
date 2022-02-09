@@ -9,6 +9,7 @@
             padding: 0;
             text-indent: 0;
         }
+        body { padding: 5px;  }
 
         h1 {
             color: black;
@@ -87,7 +88,7 @@
         <td style="width:337pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt"
             colspan="4"><p class="s1" style="padding-left: 5pt;text-indent: 0pt;line-height: 8pt;text-align: left;">По
                 данным {$reciver}, руб.</p></td>
-        <td style="width:338pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt"
+        <td style="width:300pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt"
             colspan="4"><p class="s1" style="padding-left: 5pt;text-indent: 0pt;line-height: 8pt;text-align: left;">По
                 данным {$customer_name}, руб.</p></td>
     </tr>
@@ -109,9 +110,9 @@
         </td>
         <td style="width:42pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
             <p class="s1" style="padding-left: 12pt;text-indent: 0pt;line-height: 8pt;text-align: left;">Дата</p></td>
-        <td style="width:100pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
+        <td style="width:80pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
             <p class="s1"
-               style="padding-left: 60pt;padding-right: 59pt;text-indent: 0pt;line-height: 8pt;text-align: center;">
+               style="padding-left: 50pt;padding-right: 49pt;text-indent: 0pt;line-height: 8pt;text-align: center;">
                 Документ</p>
         </td>
         <td style="width:84pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">

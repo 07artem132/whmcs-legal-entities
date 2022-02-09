@@ -16,7 +16,7 @@ class PdfController extends PdfControllerAbstract
      */
     private static $view;
 
-    public static function renderFromTpl($templateName, $vars = array(),$orientation='portrait'): string
+    public static function renderFromTpl($templateName, $vars = array(), $orientation = 'portrait'): string
     {
         global $customadminpath, $CONFIG;
 
@@ -35,7 +35,7 @@ class PdfController extends PdfControllerAbstract
         self::$view->assign('modulelink', ModuleConfig::getModuleLink());
         $result = self::$view->fetch($templateName);
         self::$view = null;
-       return self::renderFromHtml($result,$orientation);
+        return self::renderFromHtml($result, $orientation);
     }
 
     public static function renderInvoice($invoiceID = null, $sampleData = null): ?string
@@ -152,7 +152,7 @@ class PdfController extends PdfControllerAbstract
                 'inn' => $settings['inn'],
                 'kpp' => $settings['kpp'],
                 'invoiceID' => $invoiceID,
-                'invoicePaidDate' => strftime('%d %B %G г.', $invoice->date->timestamp),
+                'invoicePaidDate' => strftime('%d %B %G г.', $invoice->datePaid->timestamp),
                 'provider' => sprintf(
                 //ООО "Компания", ИНН 0000000000, р/c 0000000000, в банке %Банк получателя%, БИК 000000, к/c 00000000000000000000
                     '%s, ИНН %s, р/c %s, в банке %s, БИК %s, к/c %s',
@@ -228,14 +228,15 @@ class PdfController extends PdfControllerAbstract
         }
         return null;
     }
-    public static function renderVerifyActs($user_id = null,Carbon $start=null,Carbon $end=null, $sampleData = null): ?string
+
+    public static function renderVerifyActs($user_id = null, Carbon $start = null, Carbon $end = null, $sampleData = null): ?string
     {
         setlocale(LC_TIME, 'ru_RU.UTF-8', 'Rus');
         PdfController::init();
         if ($user_id == null && $sampleData != null) {
-            return PdfController::renderFromTpl('acts_verify_pdf.tpl', $sampleData,'landscape');
+            return PdfController::renderFromTpl('acts_verify_pdf.tpl', $sampleData, 'landscape');
         } elseif ($user_id != null) {
-           $client= \WHMCS\User\Client::findOrFail($user_id);
+            $client = \WHMCS\User\Client::findOrFail($user_id);
             $settings = SettingModel::all()
                 ->keyBy('key')
                 ->transform(function ($item, $key) {
@@ -270,11 +271,11 @@ class PdfController extends PdfControllerAbstract
                 'footerVar' => $settings['comment3'],
             ];
             foreach ($client->invoices()->Paid()->whereBetween('datepaid', [$start, $end])->get() as $item) {
-                $var['items'][]=[
-                    'id'=>$item['id'],
-                    'datepaid'=>$item['datepaid']->format('d.m.Y'),
-                    'price_raw'=>floatval($item['total']),
-                    'price'=>InvoiceFormatterController::format_price(floatval($item['total'])),
+                $var['items'][] = [
+                    'id' => $item['id'],
+                    'datepaid' => $item['datepaid']->format('d.m.Y'),
+                    'price_raw' => floatval($item['total']),
+                    'price' => InvoiceFormatterController::format_price(floatval($item['total'])),
                 ];
             }
             $var['total_raw'] = 0;
@@ -306,7 +307,7 @@ class PdfController extends PdfControllerAbstract
             $var['customer_inn'] = $customFieldValues[$settings['client_inn_id']]->value;
             $var['customer_head_position'] = $customFieldValues[$settings['client_head_position_id']]->value;
             $var['customer_full_name_of_the_head'] = $customFieldValues[$settings['client_full_name_of_the_head_id']]->value;
-            return PdfController::renderFromTpl('acts_verify_pdf.tpl', $var,'landscape');
+            return PdfController::renderFromTpl('acts_verify_pdf.tpl', $var, 'landscape');
         }
         return null;
     }

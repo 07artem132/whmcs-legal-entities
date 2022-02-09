@@ -70,7 +70,7 @@ class AdminAreaMenu extends MenuFactory
             ],
             [
                 "name" => "demo2",
-                "label" => 'Превью акта сверки',
+                "label" => 'Превью акта',
                 "uri" => ModuleConfig::getModuleLink() . "&action=demo2",
                 "order" => 1,
                 "attributes" => [

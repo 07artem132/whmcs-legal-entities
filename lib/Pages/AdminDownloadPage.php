@@ -48,7 +48,7 @@ class AdminDownloadPage implements PageInterface
             readfile($model->file);
         } elseif ($_GET['type'] == 'act') {
             $invoice = Invoice::findOrFail(intval($_GET['id']));
-            $file_name = "акт ".$_GET['id']." от ".$invoice->date->format('d.m.Y').".pdf";
+            $file_name = "акт ".$_GET['id']." от ".$invoice->datePaid->format('d.m.Y').".pdf";
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
             header('Expires: 0');
