@@ -136,8 +136,14 @@ function LegalEntities_clientarea($vars)
         if ($result == null) {
             return;
         }
-        header('Content-Type: application/pdf');
+        $file_name = sprintf('акт сверки с %s по %s.pdf', Carbon::parse($_GET['start_date'])->format('d.m.Y'),Carbon::parse($_GET['end_date'])->format('d.m.Y'));
         header('Content-Disposition: inline');
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $file_name . '"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+
         echo $result;
         die();
     }
