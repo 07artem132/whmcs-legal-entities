@@ -77,6 +77,12 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
             'uri' => '/?m=LegalEntities&page=docs',
             'order' => '12',
         ));
+    $primaryNavbar->getChild('Billing')
+        ->addChild('ts3resell23', array(
+            'label' => 'Акт сверки',
+            'uri' => '/?m=LegalEntities&page=actVerify',
+            'order' => '13',
+        ));
 
 });
 

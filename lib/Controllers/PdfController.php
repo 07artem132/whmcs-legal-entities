@@ -2,6 +2,7 @@
 
 namespace WHMCS\Module\Addon\LegalEntities\Controllers;
 
+use Carbon\Carbon;
 use WHMCS\Billing\Invoice;
 use WHMCS\Module\Addon\LegalEntities\Configs\ModuleConfig;
 use WHMCS\Module\Addon\LegalEntities\Configs\SmartyConfig;
@@ -15,7 +16,7 @@ class PdfController extends PdfControllerAbstract
      */
     private static $view;
 
-    public static function renderFromTpl($templateName, $vars = array()): string
+    public static function renderFromTpl($templateName, $vars = array(),$orientation='portrait'): string
     {
         global $customadminpath, $CONFIG;
 
@@ -34,7 +35,7 @@ class PdfController extends PdfControllerAbstract
         self::$view->assign('modulelink', ModuleConfig::getModuleLink());
         $result = self::$view->fetch($templateName);
         self::$view = null;
-        return self::renderFromHtml($result);
+       return self::renderFromHtml($result,$orientation);
     }
 
     public static function renderInvoice($invoiceID = null, $sampleData = null): ?string
@@ -224,6 +225,88 @@ class PdfController extends PdfControllerAbstract
             );
 
             return PdfController::renderFromTpl('reconciliation_act_pdf.tpl', $var);
+        }
+        return null;
+    }
+    public static function renderVerifyActs($user_id = null,Carbon $start=null,Carbon $end=null, $sampleData = null): ?string
+    {
+        setlocale(LC_TIME, 'ru_RU.UTF-8', 'Rus');
+        PdfController::init();
+        if ($user_id == null && $sampleData != null) {
+            return PdfController::renderFromTpl('acts_verify_pdf.tpl', $sampleData,'landscape');
+        } elseif ($user_id != null) {
+           $client= \WHMCS\User\Client::findOrFail($user_id);
+            $settings = SettingModel::all()
+                ->keyBy('key')
+                ->transform(function ($item, $key) {
+                    return $item->val;
+                })->toArray();
+
+            $var = [
+                'payeesBank' => $settings['payeesBank'],
+                'bik' => $settings['bik'],
+                'accountNumber1' => $settings['accountNumber1'],
+                'accountNumber2' => $settings['accountNumber2'],
+                'reciver' => $settings['reciver'],
+                'inn' => $settings['inn'],
+                'kpp' => $settings['kpp'],
+                'provider' => sprintf(
+                //ООО "Компания", ИНН 0000000000, р/c 0000000000, в банке %Банк получателя%, БИК 000000, к/c 00000000000000000000
+                    '%s, ИНН %s, р/c %s, в банке %s, БИК %s, к/c %s',
+                    $settings['reciver'],
+                    $settings['inn'],
+                    $settings['accountNumber1'],
+                    $settings['payeesBank'],
+                    $settings['bik'],
+                    $settings['accountNumber2']
+                ),
+                'Leader' => $settings['leader'],
+                'bookkeeper' => $settings['bookkeeper'],
+                'sign1' => $settings['leader-sign'],
+                'sign2' => $settings['bookkeeper-sign'],
+                'printing' => $settings['printing-sign'],
+                'headerVar' => $settings['comment1'],
+                'midleVar' => $settings['comment2'],
+                'footerVar' => $settings['comment3'],
+            ];
+            foreach ($client->invoices()->Paid()->whereBetween('datepaid', [$start, $end])->get() as $item) {
+                $var['items'][]=[
+                    'id'=>$item['id'],
+                    'datepaid'=>$item['datepaid']->format('d.m.Y'),
+                    'price_raw'=>floatval($item['total']),
+                    'price'=>InvoiceFormatterController::format_price(floatval($item['total'])),
+                ];
+            }
+            $var['total_raw'] = 0;
+            foreach ($var['items'] as $item) {
+                $var['total_raw'] += $item['price_raw'];
+            }
+            $var['total'] = InvoiceFormatterController::format_price($var['total_raw']);
+            $var['stringTotal'] = InvoiceFormatterController::str_price($var['total_raw']);
+            //$client = $invoice->client()->firstOrFail();
+            $customFieldValues = $client->customFieldValues()->get()->keyBy('fieldid');
+            $var['client_id'] = $client->id;
+            $var['client_companyname'] = $client->companyname;
+            $var['create_date'] = strftime('%d %B %G г.', strtotime($client->datecreated));
+            $var['customer'] = sprintf(
+            //'ООО "Покупатель", ИНН 0000000000, р/c 0000000000, 119019, Москва г, Новый Арбат ул, р/c 0000000000, в банке %Банк получателя%, БИК 000000, к/c 00000000000000000000'
+                '%s, (ИНН %s), р/c %s, %s, в банке %s,БИК %s, к/c %s',
+                $client->companyname,
+                $customFieldValues[$settings['client_inn_id']]->value,
+                $customFieldValues[$settings['client_pc_id']]->value,
+                $customFieldValues[$settings['client_address_id']]->value,
+                $customFieldValues[$settings['client_payeesBank_id']]->value,
+                $customFieldValues[$settings['client_bik_id']]->value,
+                $customFieldValues[$settings['client_kc_id']]->value,
+            );
+            $var['currentDate'] = Carbon::now()->format('d.m.Y');
+            $var['startDate'] = $start->format('d.m.Y');
+            $var['endDate'] = $end->format('d.m.Y');
+            $var['customer_name'] = $client->companyname;
+            $var['customer_inn'] = $customFieldValues[$settings['client_inn_id']]->value;
+            $var['customer_head_position'] = $customFieldValues[$settings['client_head_position_id']]->value;
+            $var['customer_full_name_of_the_head'] = $customFieldValues[$settings['client_full_name_of_the_head_id']]->value;
+            return PdfController::renderFromTpl('acts_verify_pdf.tpl', $var,'landscape');
         }
         return null;
     }

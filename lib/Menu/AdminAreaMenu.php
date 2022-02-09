@@ -41,6 +41,14 @@ class AdminAreaMenu extends MenuFactory
                 "attributes" => [
                     "class" => array_key_exists('action', $_GET) &&$_GET['action'] === 'acts' ? 'active' : ''
                 ]
+            ],[
+                "name" => "actsVerify",
+                "label" => 'Акт сверки',
+                "uri" => ModuleConfig::getModuleLink() . "&action=actsVerify",
+                "order" => 1,
+                "attributes" => [
+                    "class" => array_key_exists('action', $_GET) &&$_GET['action'] === 'actsVerify' ? 'active' : ''
+                ]
             ],
             [
                 "name" => "settings",

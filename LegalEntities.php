@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use WHMCS\Domain\Domain;
 use WHMCS\Module\Addon\LegalEntities\Configs\ModuleConfig;
 use WHMCS\Module\Addon\LegalEntities\Controllers\PageController;
@@ -129,6 +130,16 @@ function LegalEntities_clientarea($vars)
             'forcessl' => false,
             'vars' => array(),
         );
+    }
+    if (array_key_exists('acts', $_GET)) {
+        $result = PdfController::renderVerifyActs($_SESSION['uid'], Carbon::parse($_POST['start_date']),Carbon::parse($_POST['end_date']), null);
+        if ($result == null) {
+            return;
+        }
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline');
+        echo $result;
+        die();
     }
 
     if (array_key_exists('fid', $_GET)) {
@@ -269,5 +280,17 @@ function LegalEntities_clientarea($vars)
                 'docList' => $docs
             ),
         );
+    } elseif ($_GET['page'] == 'actVerify') {
+        return array(
+            'pagetitle' => 'Формирование акта сверки',
+            'breadcrumb' => array('index.php?m=LegalEntities' => 'Формирование акта сверки'),
+            'templatefile' => 'templates/client_actVerify.tpl',
+            'requirelogin' => true,
+            'forcessl' => false,
+            'vars' => array(
+              //  'pdf' => $pdf
+            ),
+        );
+
     }
 }
