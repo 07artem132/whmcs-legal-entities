@@ -9,7 +9,7 @@
             padding: 0;
             text-indent: 0;
         }
-        body { padding: 5px;  }
+        body { padding: 5px; padding-top: 15px;  }
 
         h1 {
             color: black;
