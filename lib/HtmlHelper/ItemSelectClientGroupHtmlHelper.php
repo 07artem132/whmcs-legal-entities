@@ -12,7 +12,7 @@ class ItemSelectClientGroupHtmlHelper extends ItemSelectConfigAbstracts
 
     function __construct()
     {
-        $result = array_column(Capsule::table("tblclientgroups")->get(), 'groupname', 'id');
+        $result = array_column(Capsule::table("tblclientgroups")->get()->toArray(), 'groupname', 'id');
         $this->groups = $result;
         foreach ($this->groups as $group_id => $group_name) {
             $this->addSelectAllow($group_id, $group_name);
